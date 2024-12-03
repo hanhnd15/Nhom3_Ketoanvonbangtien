@@ -1,0 +1,291 @@
+﻿
+ @model MoneyManagementApp.Models.Transaction
+
+@{
+    ViewData["Title"] = "Thêm Giao dịch";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center text-purple font-weight-bold mb-4">Thêm Giao Dịch Mới</h2>
+
+    <!-- Form thêm giao dịch -->
+    <form method="post" class="bg-light p-4 rounded shadow-sm">
+
+        <!-- Số tiền -->
+        <div class="form-group">
+            <label for="Amount" class="font-weight-bold">Số Tiền</label>
+            <input type="number" step="0.01" class="form-control form-control-lg" id="Amount" name="Amount" required placeholder="Nhập số tiền" />
+        </div>
+
+        <!-- Loại giao dịch -->
+        <div class="form-group mt-3">
+            <label for="TransactionType" class="font-weight-bold">Loại Giao Dịch</label>
+            <select class="form-control form-control-lg" id="TransactionType" name="TransactionType" required>
+                <option value="Income">Thu</option>
+                <option value="Expense">Chi</option>
+            </select>
+        </div>
+
+
+        <!-- Tài khoản Nợ -->
+        <div class="form-group mt-3">
+            <label for="DebitAccount" class="font-weight-bold">Tài Khoản Nợ</label>
+            <select class="form-control form-control-lg select2" id="DebitAccount" name="DebitAccount" required>
+                <optgroup label="TÀI SẢN NGẮN HẠN">
+                    <option value="111 - Tiền mặt">111 - Tiền mặt</option>
+                    <option value="112 - Tiền gửi ngân hàng">112 - Tiền gửi ngân hàng</option>
+                    <option value="113 - Tiền đang chuyển">113 - Tiền đang chuyển</option>
+                    <option value="121 - Chứng khoán kinh doanh">121 - Chứng khoán kinh doanh</option>
+                    <option value="128 - Đầu tư nắm giữ đến ngày đáo hạn">128 - Đầu tư nắm giữ đến ngày đáo hạn</option>
+                    <option value="131 - Phải thu của khách hàng">131 - Phải thu của khách hàng</option>
+                    <option value="133 - Thuế GTGT được khấu trừ">133 - Thuế GTGT được khấu trừ</option>
+                    <option value="136 - Phải thu nội bộ">136 - Phải thu nội bộ</option>
+                    <option value="138 - Phải thu khác">138 - Phải thu khác</option>
+                    <option value="141 - Tạm ứng">141 - Tạm ứng</option>
+                    <option value="151 - Hàng mua đang đi đường">151 - Hàng mua đang đi đường</option>
+                    <option value="152 - Nguyên liệu, vật liệu">152 - Nguyên liệu, vật liệu</option>
+                    <option value="153 - Công cụ, dụng cụ">153 - Công cụ, dụng cụ</option>
+                    <option value="154 - Chi phí sản xuất, kinh doanh dở dang">154 - Chi phí sản xuất, kinh doanh dở dang</option>
+                    <option value="155 - Thành phẩm">155 - Thành phẩm</option>
+                    <option value="156 - Hàng hóa">156 - Hàng hóa</option>
+                    <option value="157 - Hàng gửi đi bán">157 - Hàng gửi đi bán</option>
+                    <option value="158 - Hàng hóa kho bảo thuế">158 - Hàng hóa kho bảo thuế</option>
+                    <option value="161 - Chi sự nghiệp">161 - Chi sự nghiệp</option>
+                </optgroup>
+
+                <optgroup label="TÀI SẢN DÀI HẠN">
+                    <option value="211 - Tài sản cố định hữu hình">211 - Tài sản cố định hữu hình</option>
+                    <option value="212 - Tài sản cố định thuê tài chính">212 - Tài sản cố định thuê tài chính</option>
+                    <option value="213 - Tài sản cố định vô hình">213 - Tài sản cố định vô hình</option>
+                    <option value="214 - Hao mòn tài sản cố định">214 - Hao mòn tài sản cố định</option>
+                    <option value="217 - Bất động sản đầu tư">217 - Bất động sản đầu tư</option>
+                    <option value="221 - Đầu tư vào công ty con">221 - Đầu tư vào công ty con</option>
+                    <option value="222 - Đầu tư vào công ty liên doanh, liên kết">222 - Đầu tư vào công ty liên doanh, liên kết</option>
+                    <option value="228 - Đầu tư dài hạn khác">228 - Đầu tư dài hạn khác</option>
+                    <option value="229 - Dự phòng tổn thất tài sản">229 - Dự phòng tổn thất tài sản</option>
+                </optgroup>
+
+                <optgroup label="NỢ PHẢI TRẢ">
+                    <option value="311 - Vay ngắn hạn">311 - Vay ngắn hạn</option>
+                    <option value="315 - Nợ dài hạn đến hạn trả">315 - Nợ dài hạn đến hạn trả</option>
+                    <option value="331 - Phải trả cho người bán">331 - Phải trả cho người bán</option>
+                    <option value="333 - Thuế và các khoản phải nộp Nhà nước">333 - Thuế và các khoản phải nộp Nhà nước</option>
+                    <option value="334 - Phải trả người lao động">334 - Phải trả người lao động</option>
+                    <option value="335 - Chi phí phải trả">335 - Chi phí phải trả</option>
+                    <option value="336 - Phải trả nội bộ">336 - Phải trả nội bộ</option>
+                    <option value="337 - Thanh toán theo tiến độ hợp đồng xây dựng">337 - Thanh toán theo tiến độ hợp đồng xây dựng</option>
+                    <option value="338 - Phải trả, phải nộp khác">338 - Phải trả, phải nộp khác</option>
+                    <option value="341 - Vay và nợ thuê tài chính dài hạn">341 - Vay và nợ thuê tài chính dài hạn</option>
+                    <option value="342 - Trái phiếu phát hành">342 - Trái phiếu phát hành</option>
+                    <option value="343 - Chiết khấu trái phiếu">343 - Chiết khấu trái phiếu</option>
+                    <option value="347 - Nợ dài hạn khác">347 - Nợ dài hạn khác</option>
+                    <option value="352 - Dự phòng phải trả">352 - Dự phòng phải trả</option>
+                </optgroup>
+
+                <optgroup label="VỐN CHỦ SỞ HỮU">
+                    <option value="411 - Vốn đầu tư của chủ sở hữu">411 - Vốn đầu tư của chủ sở hữu</option>
+                    <option value="414 - Quỹ đầu tư phát triển">414 - Quỹ đầu tư phát triển</option>
+                    <option value="415 - Quỹ dự phòng tài chính">415 - Quỹ dự phòng tài chính</option>
+                    <option value="418 - Các quỹ khác thuộc vốn chủ sở hữu">418 - Các quỹ khác thuộc vốn chủ sở hữu</option>
+                    <option value="419 - Lợi nhuận sau thuế chưa phân phối">419 - Lợi nhuận sau thuế chưa phân phối</option>
+                </optgroup>
+
+                <optgroup label="DOANH THU">
+                    <option value="511 - Doanh thu bán hàng và cung cấp dịch vụ">511 - Doanh thu bán hàng và cung cấp dịch vụ</option>
+                    <option value="515 - Doanh thu hoạt động tài chính">515 - Doanh thu hoạt động tài chính</option>
+                </optgroup>
+
+                <optgroup label="CHI PHÍ">
+                    <option value="611 - Mua hàng">611 - Mua hàng</option>
+                    <option value="621 - Chi phí nguyên liệu, vật liệu trực tiếp">621 - Chi phí nguyên liệu, vật liệu trực tiếp</option>
+                    <option value="622 - Chi phí nhân công trực tiếp">622 - Chi phí nhân công trực tiếp</option>
+                    <option value="627 - Chi phí sản xuất chung">627 - Chi phí sản xuất chung</option>
+                    <option value="632 - Giá vốn hàng bán">632 - Giá vốn hàng bán</option>
+                    <option value="635 - Chi phí tài chính">635 - Chi phí tài chính</option>
+                    <option value="641 - Chi phí bán hàng">641 - Chi phí bán hàng</option>
+                    <option value="642 - Chi phí quản lý doanh nghiệp">642 - Chi phí quản lý doanh nghiệp</option>
+                </optgroup>
+
+                <optgroup label="THU NHẬP KHÁC">
+                    <option value="711 - Thu nhập khác">711 - Thu nhập khác</option>
+                </optgroup>
+
+                <optgroup label="CHI PHÍ KHÁC">
+                    <option value="811 - Chi phí khác">811 - Chi phí khác</option>
+                    <option value="821 - Chi phí thuế thu nhập doanh nghiệp">821 - Chi phí thuế thu nhập doanh nghiệp</option>
+                </optgroup>
+
+                <optgroup label="XÁC ĐỊNH KẾT QUẢ KINH DOANH">
+                    <option value="911 - Xác định kết quả kinh doanh">911 - Xác định kết quả kinh doanh</option>
+                </optgroup>
+
+            </select>
+        </div>
+
+        <!-- Tài khoản Có -->
+        <div class="form-group mt-3">
+            <label for="CreditAccount" class="font-weight-bold">Tài Khoản Có</label>
+            <select class="form-control form-control-lg select2" id="CreditAccount" name="CreditAccount" required>
+                <optgroup label="TÀI SẢN NGẮN HẠN">
+                    <option value="111 - Tiền mặt">111 - Tiền mặt</option>
+                    <option value="112 - Tiền gửi ngân hàng">112 - Tiền gửi ngân hàng</option>
+                    <option value="113 - Tiền đang chuyển">113 - Tiền đang chuyển</option>
+                    <option value="121 - Chứng khoán kinh doanh">121 - Chứng khoán kinh doanh</option>
+                    <option value="128 - Đầu tư nắm giữ đến ngày đáo hạn">128 - Đầu tư nắm giữ đến ngày đáo hạn</option>
+                    <option value="131 - Phải thu của khách hàng">131 - Phải thu của khách hàng</option>
+                    <option value="133 - Thuế GTGT được khấu trừ">133 - Thuế GTGT được khấu trừ</option>
+                    <option value="136 - Phải thu nội bộ">136 - Phải thu nội bộ</option>
+                    <option value="138 - Phải thu khác">138 - Phải thu khác</option>
+                    <option value="141 - Tạm ứng">141 - Tạm ứng</option>
+                    <option value="151 - Hàng mua đang đi đường">151 - Hàng mua đang đi đường</option>
+                    <option value="152 - Nguyên liệu, vật liệu">152 - Nguyên liệu, vật liệu</option>
+                    <option value="153 - Công cụ, dụng cụ">153 - Công cụ, dụng cụ</option>
+                    <option value="154 - Chi phí sản xuất, kinh doanh dở dang">154 - Chi phí sản xuất, kinh doanh dở dang</option>
+                    <option value="155 - Thành phẩm">155 - Thành phẩm</option>
+                    <option value="156 - Hàng hóa">156 - Hàng hóa</option>
+                    <option value="157 - Hàng gửi đi bán">157 - Hàng gửi đi bán</option>
+                    <option value="158 - Hàng hóa kho bảo thuế">158 - Hàng hóa kho bảo thuế</option>
+                    <option value="161 - Chi sự nghiệp">161 - Chi sự nghiệp</option>
+                </optgroup>
+
+                <optgroup label="TÀI SẢN DÀI HẠN">
+                    <option value="211 - Tài sản cố định hữu hình">211 - Tài sản cố định hữu hình</option>
+                    <option value="212 - Tài sản cố định thuê tài chính">212 - Tài sản cố định thuê tài chính</option>
+                    <option value="213 - Tài sản cố định vô hình">213 - Tài sản cố định vô hình</option>
+                    <option value="214 - Hao mòn tài sản cố định">214 - Hao mòn tài sản cố định</option>
+                    <option value="217 - Bất động sản đầu tư">217 - Bất động sản đầu tư</option>
+                    <option value="221 - Đầu tư vào công ty con">221 - Đầu tư vào công ty con</option>
+                    <option value="222 - Đầu tư vào công ty liên doanh, liên kết">222 - Đầu tư vào công ty liên doanh, liên kết</option>
+                    <option value="228 - Đầu tư dài hạn khác">228 - Đầu tư dài hạn khác</option>
+                    <option value="229 - Dự phòng tổn thất tài sản">229 - Dự phòng tổn thất tài sản</option>
+                </optgroup>
+
+                <optgroup label="NỢ PHẢI TRẢ">
+                    <option value="311 - Vay ngắn hạn">311 - Vay ngắn hạn</option>
+                    <option value="315 - Nợ dài hạn đến hạn trả">315 - Nợ dài hạn đến hạn trả</option>
+                    <option value="331 - Phải trả cho người bán">331 - Phải trả cho người bán</option>
+                    <option value="333 - Thuế và các khoản phải nộp Nhà nước">333 - Thuế và các khoản phải nộp Nhà nước</option>
+                    <option value="334 - Phải trả người lao động">334 - Phải trả người lao động</option>
+                    <option value="335 - Chi phí phải trả">335 - Chi phí phải trả</option>
+                    <option value="336 - Phải trả nội bộ">336 - Phải trả nội bộ</option>
+                    <option value="337 - Thanh toán theo tiến độ hợp đồng xây dựng">337 - Thanh toán theo tiến độ hợp đồng xây dựng</option>
+                    <option value="338 - Phải trả, phải nộp khác">338 - Phải trả, phải nộp khác</option>
+                    <option value="341 - Vay và nợ thuê tài chính dài hạn">341 - Vay và nợ thuê tài chính dài hạn</option>
+                    <option value="342 - Trái phiếu phát hành">342 - Trái phiếu phát hành</option>
+                    <option value="343 - Chiết khấu trái phiếu">343 - Chiết khấu trái phiếu</option>
+                    <option value="347 - Nợ dài hạn khác">347 - Nợ dài hạn khác</option>
+                    <option value="352 - Dự phòng phải trả">352 - Dự phòng phải trả</option>
+                </optgroup>
+
+                <optgroup label="VỐN CHỦ SỞ HỮU">
+                    <option value="411 - Vốn đầu tư của chủ sở hữu">411 - Vốn đầu tư của chủ sở hữu</option>
+                    <option value="414 - Quỹ đầu tư phát triển">414 - Quỹ đầu tư phát triển</option>
+                    <option value="415 - Quỹ dự phòng tài chính">415 - Quỹ dự phòng tài chính</option>
+                    <option value="418 - Các quỹ khác thuộc vốn chủ sở hữu">418 - Các quỹ khác thuộc vốn chủ sở hữu</option>
+                    <option value="419 - Lợi nhuận sau thuế chưa phân phối">419 - Lợi nhuận sau thuế chưa phân phối</option>
+                </optgroup>
+
+                <optgroup label="DOANH THU">
+                    <option value="511 - Doanh thu bán hàng và cung cấp dịch vụ">511 - Doanh thu bán hàng và cung cấp dịch vụ</option>
+                    <option value="515 - Doanh thu hoạt động tài chính">515 - Doanh thu hoạt động tài chính</option>
+                </optgroup>
+
+                <optgroup label="CHI PHÍ">
+                    <option value="611 - Mua hàng">611 - Mua hàng</option>
+                    <option value="621 - Chi phí nguyên liệu, vật liệu trực tiếp">621 - Chi phí nguyên liệu, vật liệu trực tiếp</option>
+                    <option value="622 - Chi phí nhân công trực tiếp">622 - Chi phí nhân công trực tiếp</option>
+                    <option value="627 - Chi phí sản xuất chung">627 - Chi phí sản xuất chung</option>
+                    <option value="632 - Giá vốn hàng bán">632 - Giá vốn hàng bán</option>
+                    <option value="635 - Chi phí tài chính">635 - Chi phí tài chính</option>
+                    <option value="641 - Chi phí bán hàng">641 - Chi phí bán hàng</option>
+                    <option value="642 - Chi phí quản lý doanh nghiệp">642 - Chi phí quản lý doanh nghiệp</option>
+                </optgroup>
+
+                <optgroup label="THU NHẬP KHÁC">
+                    <option value="711 - Thu nhập khác">711 - Thu nhập khác</option>
+                </optgroup>
+
+                <optgroup label="CHI PHÍ KHÁC">
+                    <option value="811 - Chi phí khác">811 - Chi phí khác</option>
+                    <option value="821 - Chi phí thuế thu nhập doanh nghiệp">821 - Chi phí thuế thu nhập doanh nghiệp</option>
+                </optgroup>
+
+                <optgroup label="XÁC ĐỊNH KẾT QUẢ KINH DOANH">
+                    <option value="911 - Xác định kết quả kinh doanh">911 - Xác định kết quả kinh doanh</option>
+                </optgroup>
+
+            </select>
+        </div>
+        <!-- Mô tả giao dịch -->
+        <div class="form-group mt-3">
+            <label for="Description" class="font-weight-bold">Mô Tả</label>
+            <input type="text" class="form-control form-control-lg" id="Description" name="Description" placeholder="Nhập mô tả giao dịch" />
+        </div>
+
+        <!-- Ngày giao dịch -->
+        <div class="form-group mt-3">
+            <label for="TransactionDate" class="font-weight-bold">Ngày Giao Dịch</label>
+            <input type="date" class="form-control form-control-lg" id="TransactionDate" name="TransactionDate" required />
+        </div>
+        <!-- Nút thêm giao dịch -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-lg btn-success hover-effect">Thêm Giao Dịch</button>
+        </div>
+    </form>
+</div>
+
+@section Styles {
+    <style>
+        h2.text-purple {
+            font-size: 2.5rem;
+            color: #6f42c1;
+        }
+
+        .form-control-lg {
+            border-radius: 12px;
+            height: 50px;
+            font-size: 1.1rem;
+        }
+
+        .hover-effect:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+
+    <!-- Thêm CSS của Select2 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    <!-- Thêm thư viện Select2 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({
+                width: '100%',
+                placeholder: "Chọn tài khoản",
+                allowClear: true
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Lấy ngày hiện tại theo múi giờ địa phương
+            var today = new Date();
+
+            // Định dạng ngày theo dạng yyyy-mm-dd theo múi giờ địa phương
+            var formattedToday = today.toLocaleDateString('en-CA'); // 'en-CA' sẽ trả về định dạng yyyy-mm-dd
+
+            // Cập nhật giá trị cho ô input TransactionDate
+            document.getElementById('TransactionDate').value = formattedToday;
+
+            // Đặt thuộc tính max cho ô input là ngày hiện tại
+            document.getElementById('TransactionDate').setAttribute('max', formattedToday);
+        });
+    </script>
+
+
+}
+

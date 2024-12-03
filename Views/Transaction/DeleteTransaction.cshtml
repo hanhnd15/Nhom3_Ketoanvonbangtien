@@ -1,0 +1,27 @@
+﻿@model MoneyManagementApp.Models.Transaction
+
+@{
+    ViewData["Title"] = "Delete Transaction";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-danger">Delete Transaction</h2>
+    <p>Are you sure you want to delete the following transaction?</p>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">@Model.Description</h5>
+            <p class="card-text">
+                <strong>Amount:</strong> @Model.Amount.ToString("C") <br />
+                <strong>Type:</strong> @Model.TransactionType <br />
+                <strong>Date:</strong> @Model.TransactionDate.ToString("dd/MM/yyyy")
+            </p>
+        </div>
+    </div>
+
+    <!-- Corrected form action -->
+    <form method="post" asp-action="Delete" asp-route-id="@Model.Id">
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="/Transaction/Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

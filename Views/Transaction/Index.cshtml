@@ -1,0 +1,215 @@
+﻿@model IEnumerable<MoneyManagementApp.Models.Transaction>
+
+@{
+    ViewData["Title"] = "Quản lý Giao dịch";
+}
+
+<!-- Nền sáng, tươi mới -->
+<div class="container-fluid bg-light text-dark min-vh-100">
+    <div class="container mt-5">
+
+        <!-- Tiêu đề -->
+        <h2 class="mb-4 text-center display-4 text-purple font-weight-bold">
+            Quản lý Giao dịch
+        </h2>
+
+        <!-- Thêm giao dịch và bộ lọc -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <!-- Nút thêm giao dịch -->
+            <a href="@Url.Action("AddTransaction", "Transaction")" class="btn btn-info btn-lg shadow-sm hover-shadow-lg">
+                <i class="bi bi-plus-circle"></i> Thêm giao dịch mới
+            </a>
+
+            <!-- Bộ lọc -->
+            <div class="d-flex gap-3">
+                <!-- Bộ lọc loại giao dịch -->
+                <select id="transactionTypeFilter" class="form-select form-select-lg shadow-sm">
+                    <option value="all">Tất cả</option>
+                    <option value="income">Thu</option>
+                    <option value="expense">Chi</option>
+                </select>
+
+                <!-- Bộ lọc ngày -->
+                <input type="text" id="dateFilter" class="form-control form-control-lg shadow-sm" placeholder="Chọn ngày" />
+            </div>
+        </div>
+
+        <!-- Bảng giao dịch -->
+        <table id="transactionTable" class="table table-bordered text-dark shadow-lg rounded">
+            <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Số tiền</th>
+                    <th>Loại giao dịch</th>
+                    <th>Tài khoản Nợ</th>
+                    <th>Tài khoản Có</th>
+                    <th>Mô tả</th>
+                    <th>Ngày</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="transactionBody">
+                @foreach (var transaction in Model)
+                {
+                    <tr data-type="@transaction.TransactionType.ToLower()" data-date="@transaction.TransactionDate.ToString("yyyy-MM-dd")">
+                        <td>@transaction.Id</td>
+                        <td>@transaction.Amount.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
+                        <td>
+                            <span class="badge @(transaction.TransactionType.ToLower() == "income" ? "bg-success" : "bg-danger")">
+                                @(transaction.TransactionType.ToLower() == "income" ? "Thu" : "Chi")
+                            </span>
+                        </td>
+                        <td>@transaction.DebitAccount</td>
+                        <td>@transaction.CreditAccount</td>
+                        <td>@transaction.Description</td>
+                        <td>@transaction.TransactionDate.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <!-- Sửa -->
+                            <a href="@Url.Action("EditTransaction", "Transaction", new { id = transaction.Id })" class="btn btn-warning btn-sm text-dark hover-effect">
+                                <i class="bi bi-pencil-square"></i> Sửa
+                            </a>
+                            <!-- Xóa -->
+                            <a href="@Url.Action("DeleteTransaction", "Transaction", new { id = transaction.Id })" class="btn btn-danger btn-sm text-light hover-effect">
+                                <i class="bi bi-trash"></i> Xóa
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Tải jQuery từ CDN chính thức -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Tải Flatpickr từ CDN hợp lệ -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- Tải DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <!-- Tải Bootstrap Icons cho biểu tượng -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <script>
+        $(document).ready(function () {
+            // Khởi tạo DataTable
+            var table = $('#transactionTable').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json"
+                },
+                paging: true,
+                searching: true,
+                ordering: true,
+                responsive: true,
+                columnDefs: [
+                    { targets: [0], visible: false } // Ẩn cột ID
+                ]
+            });
+
+            // Bộ lọc loại giao dịch
+            $('#transactionTypeFilter').on('change', function () {
+                var selectedType = this.value;
+                filterTransactions(selectedType);
+            });
+
+            // Khởi tạo Flatpickr cho bộ lọc ngày
+            flatpickr("#dateFilter", {
+                dateFormat: "Y-m-d",  // Định dạng ngày
+                maxDate: "today",     // Giới hạn ngày chọn không vượt quá ngày hôm nay
+                onChange: function (selectedDates, dateStr, instance) {
+                    filterTransactions($("#transactionTypeFilter").val(), dateStr);
+                }
+            });
+
+            // Hàm lọc giao dịch theo loại và ngày
+            function filterTransactions(type, date = '') {
+                table.rows().every(function () {
+                    var row = this.node();
+                    var rowType = $(row).data('type');
+                    var rowDate = $(row).data('date');
+
+                    // Lọc theo loại giao dịch
+                    var typeMatch = (type === "all" || rowType === type);
+
+                    // Lọc theo ngày
+                    var dateMatch = (date === "" || rowDate === date);
+
+                    if (typeMatch && dateMatch) {
+                        $(row).show();  // Hiển thị dòng nếu lọc khớp
+                    } else {
+                        $(row).hide();  // Ẩn dòng nếu lọc không khớp
+                    }
+                });
+            }
+        });
+    </script>
+
+<!-- Custom Styles -->
+
+
+    <!-- Custom Styles -->
+    <style>
+        /* Phong cách cho tiêu đề */
+        /* Phong cách cho tiêu đề */
+        h2.text-secondary {
+            font-family: 'Poppins', sans-serif; /* Font chữ hiện đại */
+            font-size: 3rem; /* Cỡ chữ lớn và dễ nhìn */
+            letter-spacing: 2px; /* Khoảng cách giữa các chữ */
+            text-transform: uppercase; /* Chữ in hoa */
+            color: #5a5a5a; /* Màu xám trung tính */
+            font-weight: 600; /* Làm chữ đậm để nổi bật */
+        }
+
+            /* Khi hover vào tiêu đề, chữ có thể sáng lên */
+            h2.text-secondary:hover {
+                color: #333333; /* Màu xám đậm khi rê chuột vào */
+            }
+        /* Hiệu ứng hover cho các nút */
+        .hover-effect:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* Thêm bóng đổ cho các nút */
+        .btn {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-lg, .form-control-lg {
+            border-radius: 10px;
+        }
+
+        .table th, .table td {
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        /* Đổi màu nền cho bảng */
+        #transactionTable {
+            background-color: #ffffff;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f8f9fa;
+        }
+
+        /* Tăng chiều cao cho các trường nhập liệu */
+        .form-select-lg, .form-control-lg {
+            height: 50px;
+        }
+
+        /* Tối ưu hóa nút và bảng */
+        .table-primary {
+            background-color: #e3f2fd;
+        }
+    </style>
+}

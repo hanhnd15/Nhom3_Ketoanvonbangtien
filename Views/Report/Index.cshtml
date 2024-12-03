@@ -1,0 +1,195 @@
+﻿@{
+    ViewData["Title"] = "Báo cáo Thu Nhập và Chi Phí";
+
+    var incomeGrouped = Model.IncomeGrouped;
+    var expenseGrouped = Model.ExpenseGrouped;
+    decimal totalIncome = Model.TotalIncome;
+    decimal totalExpense = Model.TotalExpense;
+
+    var incomeLabels = new List<string>();
+    var incomeData = new List<decimal>();
+    var expenseLabels = new List<string>();
+    var expenseData = new List<decimal>();
+
+    foreach (var item in incomeGrouped)
+    {
+        incomeLabels.Add(item.Key);
+        incomeData.Add(item.Value);
+    }
+
+    foreach (var item in expenseGrouped)
+    {
+        expenseLabels.Add(item.Key);
+        expenseData.Add(item.Value);
+    }
+
+    string startDate = Model.StartDate;
+    string endDate = Model.EndDate;
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">Báo Cáo Thu Nhập và Chi Tiêu</h2>
+
+    <!-- Form chọn khoảng thời gian -->
+    <form method="get" action="@Url.Action("Index", "Report")" class="form-inline justify-content-center mt-4">
+        <div class="form-group mx-2">
+            <label for="startDate" class="mr-2">Từ:</label>
+            <input type="text" id="startDate" name="startDate" class="form-control datepicker" value="@startDate" placeholder="Chọn ngày bắt đầu">
+        </div>
+        <div class="form-group mx-2">
+            <label for="endDate" class="mr-2">Đến:</label>
+            <input type="text" id="endDate" name="endDate" class="form-control datepicker" value="@endDate" placeholder="Chọn ngày kết thúc">
+        </div>
+        <button type="submit" class="btn btn-primary">Lọc</button>
+    </form>
+
+    <!-- Tổng thu nhập và chi phí -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Tổng Thu Nhập</h5>
+                    <p class="card-text" style="font-size: 1.5em; color: green;">@string.Format("{0:N0} VNĐ", totalIncome)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Tổng Chi Tiêu</h5>
+                    <p class="card-text" style="font-size: 1.5em; color: red;">@string.Format("{0:N0} VNĐ", totalExpense)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Chênh Lệch</h5>
+                    <p class="card-text" style="font-size: 1.5em; color: @((totalIncome - totalExpense) > 0 ? "green" : "red")">
+                        @string.Format("{0:N0} VNĐ", totalIncome - totalExpense)
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="@Url.Action("ExportToExcel", "Report", new { startDate = startDate, endDate = endDate })" class="btn btn-success">Xuất Báo Cáo Excel</a>
+        </div>
+    </div>
+
+    <!-- Biểu đồ thu nhập và chi phí -->
+    <h3 class="mt-4 text-center">Biểu Đồ Thu Nhập và Chi Tiêu</h3>
+    <canvas id="incomeExpenseChart" width="150" height="80"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+<script>
+    // Kiểm tra dữ liệu trùng khớp
+    const incomeLabels = @Html.Raw(Json.Serialize(incomeLabels));
+    const incomeData = @Html.Raw(Json.Serialize(incomeData));
+    const expenseLabels = @Html.Raw(Json.Serialize(expenseLabels));
+    const expenseData = @Html.Raw(Json.Serialize(expenseData));
+
+    // Đồng bộ hóa các labels giữa thu nhập và chi phí, đảm bảo không có label nào bị thiếu
+    const allLabels = [...new Set([...incomeLabels, ...expenseLabels])];
+
+    // Sắp xếp labels theo thứ tự tăng dần
+    allLabels.sort((a, b) => new Date(a) - new Date(b));
+
+    // Đồng bộ hóa dữ liệu thu nhập và chi phí theo các labels chung đã sắp xếp
+    const syncData = (labels, data, allLabels) => {
+        return allLabels.map(label => {
+            const index = labels.indexOf(label);
+            return index !== -1 ? data[index] : 0;
+        });
+    };
+
+    const syncIncomeData = syncData(incomeLabels, incomeData, allLabels);
+    const syncExpenseData = syncData(expenseLabels, expenseData, allLabels);
+
+    // Dữ liệu cho biểu đồ
+    const weeklyData = {
+        labels: allLabels, // Các label cho trục X
+        datasets: [
+            {
+                label: 'Thu Nhập',
+                data: syncIncomeData, // Dữ liệu thu nhập đã đồng bộ
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                hoverBackgroundColor: 'rgba(75, 192, 192, 0.8)',
+                hoverBorderColor: 'rgba(75, 192, 192, 1)'
+            },
+            {
+                label: 'Chi Tiêu',
+                data: syncExpenseData, // Dữ liệu chi phí đã đồng bộ
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                hoverBackgroundColor: 'rgba(255, 99, 132, 0.8)',
+                hoverBorderColor: 'rgba(255, 99, 132, 1)'
+            }
+        ]
+    };
+
+    // Khởi tạo biểu đồ
+    new Chart(document.getElementById('incomeExpenseChart'), {
+        type: 'bar', // Loại biểu đồ (có thể thay đổi thành 'line' hoặc 'pie' nếu muốn)
+        data: weeklyData, // Dữ liệu cho biểu đồ
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return tooltipItem.dataset.label + ': ' + tooltipItem.raw.toLocaleString() + ' VNĐ'; // Hiển thị đơn vị VNĐ trong tooltip
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Thời Gian' // Tiêu đề trục X
+                    },
+                    ticks: {
+                        autoSkip: true, // Tự động bỏ qua các label nếu quá nhiều
+                        maxRotation: 90, // Quay các label theo chiều dọc nếu cần thiết
+                        minRotation: 45
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Giá Trị' // Tiêu đề trục Y
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString() + ' VNĐ'; // Định dạng giá trị trên trục Y
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Khởi tạo Datepicker cho startDate và endDate
+    $(document).ready(function () {
+        $(".datepicker").datepicker({
+            dateFormat: "yy-mm-dd"
+        });
+    });
+</script>
